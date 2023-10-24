@@ -1,11 +1,11 @@
-NAME 		= EasyFind
+NAME 		= Span
 
 CXX			= c++
-CXXFLAGS	= -Wall -Werror -Wextra -std=c++98 -MMD
+CXXFLAGS	= -Wall -Werror -Wextra -std=c++98 -g3 -MMD
 RM			= rm -rf
 
-SRC 		= main.cpp 
-INCLUDE		= easyfind.hpp
+SRC 		= main.cpp  Span.cpp
+INCLUDE		= Span.hpp
 FILE		= .compil/
 OBJ		 	= $(SRC:.cpp=.o)
 DEP 		= $(SRC:.cpp=.d)

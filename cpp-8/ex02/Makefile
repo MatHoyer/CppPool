@@ -1,11 +1,11 @@
-NAME 		= EasyFind
+NAME 		= MutantStack
 
 CXX			= c++
 CXXFLAGS	= -Wall -Werror -Wextra -std=c++98 -MMD
 RM			= rm -rf
 
 SRC 		= main.cpp 
-INCLUDE		= easyfind.hpp
+INCLUDE		= MutantStack.hpp
 FILE		= .compil/
 OBJ		 	= $(SRC:.cpp=.o)
 DEP 		= $(SRC:.cpp=.d)
