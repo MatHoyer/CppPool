@@ -15,17 +15,18 @@ class Bitcoin {
 		Bitcoin& operator=(const Bitcoin& other);
 		~Bitcoin();
 
+		unsigned int dateToInt(int year, int month, int day);
 		void readDataBase();
 		void associateToInput();
 		void checkPipe(std::string line);
 		float convert(std::string value);
 		void ParseAndAssociate(std::string date, float value);
-		int findCoef(int year, int month, int day);
+		float findCoef(int yearInput, int monthInput, int dayInput);
 
 		void printMap();
 
 	private:
-		std::map<std::string, float> _data;
+		std::map<unsigned int, float> _data;
 		std::string _inputFile;
 
 		class BadOpen : public std::exception {

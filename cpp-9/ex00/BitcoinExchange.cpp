@@ -25,6 +25,25 @@ Bitcoin::~Bitcoin() {
 
 }
 
+unsigned int Bitcoin::dateToInt(int year, int month, int day) {
+	int feb = 28; // Normal
+	if ((year % 4 == 0 && year % 100 != 0) || (year % 400 == 0))
+		feb = 29; // Bisextile
+	int dayPerMonth[12] = {31, feb, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31};
+	
+	unsigned int returnValue = 0;
+	for (int i = 1970; i < year; i++) {
+		if (feb == 29)
+			returnValue += 366;
+		else
+			returnValue += 355;
+	}
+	for (int i = 0; i < month; i++)
+		returnValue += dayPerMonth[i];
+	returnValue += day;
+	return returnValue;
+}
+
 void Bitcoin::readDataBase() {
 	std::ifstream dataBase(DATABASE);
 	if (!dataBase.is_open())
@@ -38,7 +57,18 @@ void Bitcoin::readDataBase() {
 			std::string tmpValue;
 			std::getline(ss, tmpKey, ',');
 			std::getline(ss, tmpValue, ',');
-			_data.insert(std::make_pair(tmpKey, std::strtof(tmpValue.c_str(), NULL)));
+
+			std::istringstream convSs(tmpKey);
+			std::string yearS, monthS, dayS;
+			std::getline(convSs, yearS, '-');
+			std::getline(convSs, monthS, '-');
+			std::getline(convSs, dayS, '-');
+			int year, month, day;
+			year = strtod(yearS.c_str(), NULL);
+			month = strtod(monthS.c_str(), NULL);
+			day = strtod(dayS.c_str(), NULL);
+
+			_data.insert(std::make_pair(dateToInt(year, month, day), std::strtof(tmpValue.c_str(), NULL)));
 		}
 	}
 
@@ -59,23 +89,18 @@ float Bitcoin::convert(std::string value) {
 	return returnValue;
 }
 
-int Bitcoin::findCoef(int yearInput, int monthInput, int dayInput) {
+float Bitcoin::findCoef(int year, int month, int day) {
+	unsigned int toSearch = dateToInt(year, month, day);
 
-	for (std::map<std::string, float>::iterator it = _data.begin(); it != _data.end(); ++it) {
-		std::istringstream ss(it->first);
-		std::string yearS, monthS, dayS;
-		std::getline(ss, yearS, '-');
-		std::getline(ss, monthS, '-');
-		std::getline(ss, dayS, '-');
-		int year, month, day;
-		year = strtod(yearS.c_str(), NULL);
-		month = strtod(monthS.c_str(), NULL);
-		day = strtod(dayS.c_str(), NULL);
-		if (yearInput == year && monthInput == month && dayInput == day)
-			return it->second;
-	}
-
-	return 0;
+	std::map<unsigned int, float>::iterator lower = _data.lower_bound(toSearch);
+	std::map<unsigned int, float>::iterator upper = _data.upper_bound(toSearch);
+	if (lower != _data.begin())
+    	--lower;
+	
+	// unsigned int diffLower = toSearch - lower->first;
+	// unsigned int diffUpper = upper->first - toSearch;
+	return lower->second;
+	return upper->second;
 }
 
 
@@ -121,7 +146,7 @@ void Bitcoin::associateToInput() {
 
 void Bitcoin::printMap() {
 	
-	for (std::map<std::string, float>::iterator it = _data.begin(); it != _data.end(); ++it) {
+	for (std::map<unsigned int, float>::iterator it = _data.begin(); it != _data.end(); ++it) {
 		std::cout << it->first << " : " << it->second << std::endl;
 	}
 }
