@@ -38,7 +38,7 @@ unsigned int Bitcoin::dateToInt(int year, int month, int day) {
 		else
 			returnValue += 355;
 	}
-	for (int i = 0; i < month; i++)
+	for (int i = 0; i <= month; i++)
 		returnValue += dayPerMonth[i];
 	returnValue += day;
 	return returnValue;
@@ -91,16 +91,10 @@ float Bitcoin::convert(std::string value) {
 
 float Bitcoin::findCoef(int year, int month, int day) {
 	unsigned int toSearch = dateToInt(year, month, day);
-
 	std::map<unsigned int, float>::iterator lower = _data.lower_bound(toSearch);
-	std::map<unsigned int, float>::iterator upper = _data.upper_bound(toSearch);
-	if (lower != _data.begin())
-    	--lower;
-	
-	// unsigned int diffLower = toSearch - lower->first;
-	// unsigned int diffUpper = upper->first - toSearch;
+	if (lower->first != toSearch && lower != _data.begin())
+		lower--;
 	return lower->second;
-	return upper->second;
 }
 
 
@@ -114,7 +108,15 @@ void Bitcoin::ParseAndAssociate(std::string date, float value) {
 	year = strtod(yearS.c_str(), NULL);
 	month = strtod(monthS.c_str(), NULL);
 	day = strtod(dayS.c_str(), NULL);
-	std::cout << date << "=> " << value << " = " << value * findCoef(year, month, day) << std::endl;
+
+	int feb = 28; // Normal
+	if ((year % 4 == 0 && year % 100 != 0) || (year % 400 == 0))
+		feb = 29; // Bisextile
+	int dayPerMonth[12] = {31, feb, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31};
+	if ((year < 1970 || year > 2030) || (month <= 0 || month > 12) || (day <= 0 || day > dayPerMonth[month - 1]))
+		throw BadDate();
+	
+	std::cout << dateToInt(year, month, day) << " " << date << "=> " << value << " = " << value * findCoef(year, month, day) << std::endl;
 }
 
 void Bitcoin::associateToInput() {
