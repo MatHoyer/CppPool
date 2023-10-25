@@ -64,9 +64,9 @@ void Bitcoin::readDataBase() {
 			std::getline(convSs, monthS, '-');
 			std::getline(convSs, dayS, '-');
 			int year, month, day;
-			year = strtod(yearS.c_str(), NULL);
-			month = strtod(monthS.c_str(), NULL);
-			day = strtod(dayS.c_str(), NULL);
+			year = std::atoi(yearS.c_str());
+			month = std::atoi(monthS.c_str());
+			day = std::atoi(dayS.c_str());
 
 			_data.insert(std::make_pair(dateToInt(year, month, day), std::strtof(tmpValue.c_str(), NULL)));
 		}
@@ -105,9 +105,9 @@ void Bitcoin::ParseAndAssociate(std::string date, float value) {
 	std::getline(ss, monthS, '-');
 	std::getline(ss, dayS, '-');
 	int year, month, day;
-	year = strtod(yearS.c_str(), NULL);
-	month = strtod(monthS.c_str(), NULL);
-	day = strtod(dayS.c_str(), NULL);
+	year = std::atoi(yearS.c_str());
+	month = std::atoi(monthS.c_str());
+	day = std::atoi(dayS.c_str());
 
 	int feb = 28; // Normal
 	if ((year % 4 == 0 && year % 100 != 0) || (year % 400 == 0))
