@@ -1,11 +1,11 @@
-NAME 		= EasyFind
+NAME 		= RPN
 
 CXX			= c++
 CXXFLAGS	= -Wall -Werror -Wextra -std=c++98 -MMD
 RM			= rm -rf
 
-SRC 		= main.cpp 
-INCLUDE		= easyfind.hpp
+SRC 		= main.cpp RPN.cpp
+INCLUDE		= RPN.hpp
 FILE		= .compil/
 OBJ		 	= $(SRC:.cpp=.o)
 DEP 		= $(SRC:.cpp=.d)
