@@ -116,7 +116,7 @@ void Bitcoin::ParseAndAssociate(std::string date, float value) {
 	if ((year < 1970 || year > 2030) || (month <= 0 || month > 12) || (day <= 0 || day > dayPerMonth[month - 1]))
 		throw BadDate();
 	
-	std::cout << dateToInt(year, month, day) << " " << date << "=> " << value << " = " << value * findCoef(year, month, day) << std::endl;
+	std::cout << date << "=> " << value << " = " << value * findCoef(year, month, day) << std::endl;
 }
 
 void Bitcoin::associateToInput() {
