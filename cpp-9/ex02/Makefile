@@ -1,11 +1,11 @@
-NAME 		= EasyFind
+NAME 		= PmergeMe
 
 CXX			= c++
 CXXFLAGS	= -Wall -Werror -Wextra -std=c++98 -MMD
 RM			= rm -rf
 
-SRC 		= main.cpp 
-INCLUDE		= easyfind.hpp
+SRC 		= main.cpp PmergeMe.cpp
+INCLUDE		= PmergeMe.hpp
 FILE		= .compil/
 OBJ		 	= $(SRC:.cpp=.o)
 DEP 		= $(SRC:.cpp=.d)
