@@ -18,6 +18,7 @@ class PmergeMe {
 
 
 		std::vector<int> sortVec();
+		std::list<int> sortList();
 		
 		void doMerge();
 
