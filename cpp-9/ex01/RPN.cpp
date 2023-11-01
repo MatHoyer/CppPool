@@ -30,15 +30,20 @@ void RPN::initStacks() {
     }
 	std::istringstream ss(reverse);
 	std::string charac;
+	int compt = 0;
 	while (std::getline(ss, charac, ' ')) {
-		if (charac[0] == '+' || charac[0] == '-' || charac[0] == '/' || charac[0] == '*')
+		if (charac[0] == '+' || charac[0] == '-' || charac[0] == '/' || charac[0] == '*') {
 			_operator.push(charac[0]);
-		else if (charac[0] >= '0' && charac[0] <= '9')
+			compt = 0;
+		}
+		else if (charac[0] >= '0' && charac[0] <= '9') {
 			_nums.push(std::atoi(charac.c_str()));
+			++compt;
+		}
 		else
 			throw BadInput();
 	}
-	if (_nums.size() != _operator.size() + 1)
+	if (_nums.size() != _operator.size() + 1 || compt != 2)
 		throw BadInput();
 }
 
