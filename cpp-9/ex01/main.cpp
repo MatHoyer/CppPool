@@ -11,8 +11,9 @@ int main(int ac, char **av) {
 
 	try {
 		calc.initStacks();
-		calc.printStacks();
-		std::cout << "=> " << calc.calculateStacks() << std::endl;
+		// calc.printStacks();
+		// std::cout << "=> ";
+		std::cout << calc.calculateStacks() << std::endl;
 	} catch (std::exception& e) {
 		std::cout << e.what() << std::endl;
 	}
