@@ -129,7 +129,7 @@ std::vector<int> PmergeMe::sortVec() {
 }
 
 // ========================================== LIST ==============================================
-std::list<std::pair<int, int> > sortPair(std::list<std::pair<int, int> > S) {
+std::list<std::pair<int, int> > sortPairList(std::list<std::pair<int, int> > S) {
 	std::list<std::pair<int, int> > sortedS;
 	int min[2];
 	std::list<std::pair<int, int> >::iterator itMem;
@@ -149,7 +149,7 @@ std::list<std::pair<int, int> > sortPair(std::list<std::pair<int, int> > S) {
 	return sortedS;
 }
 
-void insertJacob(std::list<std::pair<int, int> > S, std::list<int>& list) {
+void insertJacobList(std::list<std::pair<int, int> > S, std::list<int>& list) {
 	int indJacob = 0;
 	while (indJacob != -1) {
 		int start = jacobsthal(indJacob);
@@ -160,7 +160,10 @@ void insertJacob(std::list<std::pair<int, int> > S, std::list<int>& list) {
 		while (!S.empty()) {
 			std::list<int>::iterator insertIt = std::upper_bound(list.begin(), list.end(), it->first);
 			list.insert(insertIt, it->first);
-			S.erase(it);
+			 std::list<std::pair<int, int> >::iterator nextIt = it;
+    		++nextIt;
+    		S.erase(it); 
+    		it = nextIt;
 			if (it != S.begin())
 				it--;
 		}
@@ -189,11 +192,11 @@ std::list<int> PmergeMe::sortList() {
 			it->second = tmp;
 		}
 	}
-	S = sortPair(S);
+	S = sortPairList(S);
 	std::list<int> newList;
 	for (std::list<std::pair<int, int> >::iterator it = S.begin(); it != S.end(); it++)
 		newList.push_back(it->second);
-	insertJacob(S, newList);
+	insertJacobList(S, newList);
 	while (newList.front() == -1)
 		newList.erase(newList.begin());
 	return newList;
