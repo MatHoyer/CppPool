@@ -1,25 +1,30 @@
 #include "PmergeMe.hpp"
-#include <sys/time.h>
+#include <algorithm>
+#include <bits/types/clock_t.h>
 #include <cstddef>
 #include <cstdlib>
+#include <iterator>
+#include <list>
+#include <utility>
+#include <vector>
 
 PmergeMe::PmergeMe(int ac, char **arg) {
 	for (int i = 1; i < ac; i++) {
 		int nb = std::atoi(arg[i]);
 		_list.push_back(nb);
-		_deque.push_back(nb);
+		_vector.push_back(nb);
 	}
 }
 
 PmergeMe::PmergeMe(const PmergeMe& other) {
-	_deque = other._deque;
+	_vector = other._vector;
 	_list = other._list;
 }
 
 PmergeMe& PmergeMe::operator=(const PmergeMe& other) {
 	if (this == &other)
 		return *this;
-	_deque = other._deque;
+	_vector = other._vector;
 	_list = other._list;
 	return *this;
 }
@@ -28,114 +33,115 @@ PmergeMe::~PmergeMe() {
 
 }
 
-void PmergeMe::printList(std::list<int> list) {
-	for (std::list<int>::iterator it = list.begin(); it != list.end(); it++) {
-		std::cout << *it << " ";
+void PmergeMe::printVector(std::vector<int> vec) {
+	for (size_t i = 0; i < vec.size(); i++) {
+		std::cout << vec[i] << " ";
 	}
 	std::cout << std::endl;
 }
 
-std::list<int> PmergeMe::doFusion(std::list<int> list1, std::list<int> list2) {
-	std::list<int> listTotal;
-
-	while (list1.size() && list2.size()) {
-		if (list1.front() < list2.front()) {
-			listTotal.push_back(list1.front());
-			list1.pop_front();
-		}
-		else {
-			listTotal.push_back(list2.front());
-			list2.pop_front();
-		}
+void PmergeMe::printList(std::list<int> lst) {
+	for (size_t i = 0; i < lst.size(); i++) {
+		std::cout << lst.front() << " ";
+		lst.pop_front();
 	}
-	while (list1.size()) {
-		listTotal.push_back(list1.front());
-		list1.pop_front();
-	}
-	while (list2.size()) {
-		listTotal.push_back(list2.front());
-		list2.pop_front();
-	}
-	return listTotal;
+	std::cout << std::endl;
 }
 
-std::list<int> PmergeMe::mergeSort(std::list<int> list) {
-	if (list.size() <= 1)
-		return list;
-
-	size_t middle = list.size() / 2;
-	std::list<int> list1;
-	std::list<int> list2;
-	while (list.size() != middle) {
-		list1.push_back(list.front());
-		list.pop_front();
-	}
-	while (list.size()) {
-		list2.push_back(list.front());
-		list.pop_front();
-	}
-	return doFusion(mergeSort(list1), mergeSort(list2));
+int jacobsthal(int n) {
+    if (n == 0)
+        return 0;
+    else if (n == 1)
+        return 1;
+    else
+        return jacobsthal(n - 1) + 2 * jacobsthal(n - 2);
 }
 
-std::deque<int> PmergeMe::doFusion(std::deque<int> deque1, std::deque<int> deque2) {
-	std::deque<int> dequeTotal;
-
-	while (deque1.size() && deque2.size()) {
-		if (deque1.front() < deque2.front()) {
-			dequeTotal.push_back(deque1.front());
-			deque1.pop_front();
+std::vector<std::pair<int, int> > sortPair(std::vector<std::pair<int, int> > S) {
+	std::vector<std::pair<int, int> > sortedS;
+	int min[2];
+	std::vector<std::pair<int, int> >::iterator itMem;
+	while (!S.empty()) {
+		min[0] = 0;
+		min[1] = 2147483647;
+		for (std::vector<std::pair<int, int> >::iterator it = S.begin(); it != S.end(); it++) {
+			if (it->second < min[1]) {
+				min[0] = it->first; 
+				min[1] = it->second;
+				itMem = it;
+			}
 		}
-		else {
-			dequeTotal.push_back(deque2.front());
-			deque2.pop_front();
+		S.erase(itMem);
+		sortedS.push_back(std::make_pair(min[0], min[1]));
+	}
+	return sortedS;
+}
+
+void insertJacob(std::vector<std::pair<int, int> > S, std::vector<int>& vector) {
+	int indJacob = 0;
+	while (indJacob != -1) {
+		int start = jacobsthal(indJacob);
+		if ((size_t)start > vector.size())
+			break;
+		std::vector<std::pair<int, int> >::iterator it = S.begin();
+		std::advance(it, start);
+		while (!S.empty()) {
+			std::vector<int>::iterator insertIt = std::upper_bound(vector.begin(), vector.end(), it->first);
+			vector.insert(insertIt, it->first);
+			S.erase(it);
+			std::cout << std::endl;
+			if (it != S.begin())
+				it--;
+		}
+		++indJacob;
+	}
+}
+
+std::vector<int> PmergeMe::sortVec() {
+	if (_vector.empty() || _vector.size() == 1)
+		return _vector;
+	std::vector<std::pair<int, int> > S;
+	for (std::vector<int>::iterator it = _vector.begin(); it != _vector.end(); it++) {
+		std::vector<int>::iterator itNext = it + 1;
+		if (itNext != _vector.end()) {
+			S.push_back(std::make_pair(*it, *itNext));
+			it++;
+		}
+		else
+			S.push_back(std::make_pair(*it, -1));
+	}
+	for (std::vector<std::pair<int, int> >::iterator it = S.begin(); it != S.end(); it++) {
+		if (it->first > it->second) {
+			int tmp = it->first;
+			it->first = it->second;
+			it->second = tmp;
 		}
 	}
-	while (deque1.size()) {
-		dequeTotal.push_back(deque1.front());
-		deque1.pop_front();
-	}
-	while (deque2.size()) {
-		dequeTotal.push_back(deque2.front());
-		deque2.pop_front();
-	}
-	return dequeTotal;
+	S = sortPair(S);
+	std::vector<int> newVector;
+	for (std::vector<std::pair<int, int> >::iterator it = S.begin(); it != S.end(); it++)
+		newVector.push_back(it->second);
+	insertJacob(S, newVector);
+	while (newVector.front() == -1)
+		newVector.erase(newVector.begin());
+	return newVector;
 }
 
-std::deque<int> PmergeMe::mergeSort(std::deque<int> deque) {
-	if (deque.size() <= 1)
-		return deque;
-
-	size_t middle = deque.size() / 2;
-	std::deque<int> deque1;
-	std::deque<int> deque2;
-	while (deque.size() != middle) {
-		deque1.push_back(deque.front());
-		deque.pop_front();
-	}
-	while (deque.size()) {
-		deque2.push_back(deque.front());
-		deque.pop_front();
-	}
-	return doFusion(mergeSort(deque1), mergeSort(deque2));
-}
 
 void PmergeMe::doMerge() {
-	struct timeval start, end;
 	{
-		printList(_list);
-		gettimeofday(&start, NULL);
-		_list = mergeSort(_list);
-		gettimeofday(&end, NULL);
-		printList(_list);
-		unsigned long timeToExec = (end.tv_sec - start.tv_sec) * 1000000 + (end.tv_usec - start.tv_usec);
-		std::cout << "Time to process a range of " << _list.size() << " elements with std::list : " << timeToExec << " us" << std::endl;
+		printVector(_vector);
+		clock_t start = clock();
+		_vector = sortVec();
+		clock_t end = clock();
+		printVector(_vector);
+		std::cout << "Time to process a range of " << _vector.size() << " elements with std::vector : " << static_cast<double>(end - start) / CLOCKS_PER_SEC * 1000000 << " us" << std::endl;
 	}
-	{
-		gettimeofday(&start, NULL);
-		_deque = mergeSort(_deque);
-		gettimeofday(&end, NULL);
-		unsigned long timeToExec = (end.tv_sec - start.tv_sec) * 1000000 + (end.tv_usec - start.tv_usec);
-		std::cout << "Time to process a range of " << _deque.size() << " elements with std::deque : " << timeToExec << " us" << std::endl;
-	}
-
+	// {
+	// 	clock_t start = clock();
+	// 	_list = sortList(_list);
+	// 	clock_t end = clock();
+	// 	printList(_list);
+	// 	std::cout << "Time to process a range of " << _vector.size() << " elements with std::list : " << static_cast<double>(end - start) / CLOCKS_PER_SEC * 1000000 << " us" << std::endl;
+	// }
 }

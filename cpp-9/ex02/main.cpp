@@ -1,4 +1,5 @@
 #include "PmergeMe.hpp"
+#include <cstdio>
 
 int main(int ac, char **av) {
 	if (ac < 2) {
