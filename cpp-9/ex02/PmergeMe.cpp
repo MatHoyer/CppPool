@@ -89,7 +89,6 @@ void insertJacob(std::vector<std::pair<int, int> > S, std::vector<int>& vector) 
 			std::vector<int>::iterator insertIt = std::upper_bound(vector.begin(), vector.end(), it->first);
 			vector.insert(insertIt, it->first);
 			S.erase(it);
-			std::cout << std::endl;
 			if (it != S.begin())
 				it--;
 		}
