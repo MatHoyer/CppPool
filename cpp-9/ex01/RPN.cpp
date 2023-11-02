@@ -6,7 +6,7 @@ RPN::RPN(std::string input) : _input(input) {
 
 }
 
-RPN::RPN(const RPN& other) : _input(other._input), _nums(other._nums), _operator(other._operator) {
+RPN::RPN(const RPN& other) : _input(other._input), _memStack(other._memStack) {
 
 }
 
@@ -14,8 +14,7 @@ RPN& RPN::operator=(const RPN& other) {
 	if (this == &other)
 		return *this;
 	_input = other._input;
-	_nums = other._nums;
-	_operator = other._operator;
+	_memStack = other._memStack;
 	return *this;
 }
 
@@ -30,65 +29,80 @@ void RPN::initStacks() {
     }
 	std::istringstream ss(reverse);
 	std::string charac;
-	int compt = 0;
+	int compt = 1;
+	int nums = 0;
+	int operators = 0;
 	while (std::getline(ss, charac, ' ')) {
+		if (charac.length() != 1)
+			throw BadInput();
 		if (charac[0] == '+' || charac[0] == '-' || charac[0] == '/' || charac[0] == '*') {
-			_operator.push(charac[0]);
+			_memStack.push(static_cast<int>(charac[0]));
 			compt = 0;
+			++operators;
 		}
 		else if (charac[0] >= '0' && charac[0] <= '9') {
-			_nums.push(std::atoi(charac.c_str()));
+			_memStack.push(static_cast<int>(charac[0] - '0'));
 			++compt;
+			++nums;
 		}
 		else
 			throw BadInput();
 	}
-	if (_nums.size() != _operator.size() + 1 || compt != 2)
+	if (nums != operators + 1 || compt < 2)
 		throw BadInput();
 }
 
 int RPN::calculateStacks() {
-	int tmpNum;
+	std::stack<int> calcStack;
+	int tmpNum1, tmpNum2;
 
-	tmpNum = _nums.top();
-	_nums.pop();
-	while (!_operator.empty()) {
-		switch (_operator.top()) {
+	while (!_memStack.empty()) {
+		switch (_memStack.top()) {
 			case '+':
-				tmpNum += _nums.top();
+				tmpNum1 = calcStack.top();
+				calcStack.pop();
+				tmpNum2 = calcStack.top();
+				calcStack.pop();
+				calcStack.push(tmpNum2 + tmpNum1);
 				break;
 			case '-':
-				tmpNum -= _nums.top();
+				tmpNum1 = calcStack.top();
+				calcStack.pop();
+				tmpNum2 = calcStack.top();
+				calcStack.pop();
+				calcStack.push(tmpNum2 - tmpNum1);
 				break;
 			case '/':
-				tmpNum /= _nums.top();
+				tmpNum1 = calcStack.top();
+				calcStack.pop();
+				tmpNum2 = calcStack.top();
+				calcStack.pop();
+				calcStack.push(tmpNum2 / tmpNum1);
 				break;
 			case '*':
-				tmpNum *= _nums.top();
+				tmpNum1 = calcStack.top();
+				calcStack.pop();
+				tmpNum2 = calcStack.top();
+				calcStack.pop();
+				calcStack.push(tmpNum2 * tmpNum1);
+				break;
+			default:
+				calcStack.push(_memStack.top());
 				break;
 		}
-		_nums.pop();
-		_operator.pop();
+		_memStack.pop();
 	}
 
-	return tmpNum;
+	return calcStack.top();
 }
 
 void RPN::printStacks() {
-	std::stack<int> _numsCopy = _nums;
-	std::stack<char> _operatorCopy = _operator;
-	std::cout << _numsCopy.top() << " ";
-	_numsCopy.pop();
-	while (!_numsCopy.empty() || !_operatorCopy.empty()) {
-		if (!_numsCopy.empty()) {
-			std::cout << _numsCopy.top() << " ";
-			_numsCopy.pop();
-		}
-		if (!_operatorCopy.empty()) {
-			std::cout << _operatorCopy.top() << " ";
-			_operatorCopy.pop();
-		}
+	std::stack<int> memStackCopy = _memStack;
+	while (!memStackCopy.empty()) {
+		std::cout << memStackCopy.top() << " ";
+		memStackCopy.pop();
 	}
+	std::cout << std::endl;
 }
 
 const char *RPN::BadInput::what() const throw() {

@@ -20,8 +20,7 @@ class RPN {
 
 	private:
 		std::string _input;
-		std::stack<int> _nums;
-		std::stack<char> _operator;
+		std::stack<int> _memStack;
 		class BadInput : public std::exception {
 			virtual const char *what() const throw();
 		};
