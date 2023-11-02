@@ -1,5 +1,6 @@
 #include "PmergeMe.hpp"
 #include <cstdio>
+#include <exception>
 
 int main(int ac, char **av) {
 	if (ac < 2) {
@@ -7,9 +8,12 @@ int main(int ac, char **av) {
 		std::cout << "./PmergeMe <positive integer sequence>" << std::endl;
 		return 1;
 	}
-
-	PmergeMe merger(ac, av);
-	merger.doMerge();
+	try {
+		PmergeMe merger(ac, av);
+		merger.doMerge();
+	} catch (std::exception& e) {
+		std::cout << e.what() << std::endl;
+	}
 
 	return 0;
 }

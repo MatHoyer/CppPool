@@ -5,11 +5,17 @@
 #include <cstdlib>
 #include <iterator>
 #include <list>
+#include <stdexcept>
 #include <utility>
 #include <vector>
 
 PmergeMe::PmergeMe(int ac, char **arg) {
 	for (int i = 1; i < ac; i++) {
+		std::string newArg = arg[i];
+		for (std::string::iterator j = newArg.begin(); j != newArg.end(); j++) {
+			if (*j < '0' || *j > '9')
+				throw std::out_of_range("Error: not a positive integer sequence"); 
+		}
 		int nb = std::atoi(arg[i]);
 		_list.push_back(nb);
 		_vector.push_back(nb);
@@ -41,7 +47,7 @@ void PmergeMe::printVector(std::vector<int> vec) {
 }
 
 void PmergeMe::printList(std::list<int> lst) {
-	for (size_t i = 0; i < lst.size(); i++) {
+	while (!lst.empty()) {
 		std::cout << lst.front() << " ";
 		lst.pop_front();
 	}
@@ -212,9 +218,11 @@ void PmergeMe::doMerge() {
 		std::cout << "Time to process a range of " << _vector.size() << " elements with std::vector : " << static_cast<double>(end - start) / CLOCKS_PER_SEC * 1000000 << " us" << std::endl;
 	}
 	{
+		// printList(_list);
 		clock_t start = clock();
 		_list = sortList();
 		clock_t end = clock();
+		// printList(_list);
 		std::cout << "Time to process a range of " << _list.size() << " elements with std::list : " << static_cast<double>(end - start) / CLOCKS_PER_SEC * 1000000 << " us" << std::endl;
 	}
 }
