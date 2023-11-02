@@ -11,8 +11,8 @@ int main (int ac, char **av) {
 	Bitcoin bit(av[1]);
 	try {
 		bit.readDataBase();
-		bit.printMap();
-		std::cout << std::endl;
+		// bit.printMap();
+		// std::cout << std::endl;
 		bit.associateToInput();
 	} catch (std::exception& e) {
 		std::cout << e.what() << std::endl;
